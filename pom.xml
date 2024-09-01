@@ -25,11 +25,18 @@
         <duckdb.version>1.0.0</duckdb.version>
         <lombok.version>1.18.34</lombok.version>
         <sql2o.version>1.8.0</sql2o.version>
+        <assertj.version>3.25.3</assertj.version>
     </properties>
 
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>fr.qgo</groupId>
+                <artifactId>rest-api-ext</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>org.sql2o</groupId>
                 <artifactId>sql2o</artifactId>
@@ -49,6 +56,13 @@
                 <scope>provided</scope>
             </dependency>
 
+            <dependency>
+                <groupId>org.assertj</groupId>
+                <artifactId>assertj-core</artifactId>
+                <version>${assertj.version}</version>
+                <scope>test</scope>
+            </dependency>
+
             <!-- Spring Boot BOM -->
             <dependency>
                 <groupId>org.springframework.boot</groupId>
@@ -58,11 +72,6 @@
                 <scope>import</scope>
             </dependency>
 
-            <dependency>
-                <groupId>fr.qgo</groupId>
-                <artifactId>rest-api-ext</artifactId>
-                <version>${project.version}</version>
-            </dependency>
         </dependencies>
     </dependencyManagement>
 

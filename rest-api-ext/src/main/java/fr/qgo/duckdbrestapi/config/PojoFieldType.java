@@ -1,8 +1,19 @@
 package fr.qgo.duckdbrestapi.config;
 
-public record PojoFieldType(String value) {
-    @Override
-    public String toString() {
-        return value;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
+public class PojoFieldType {
+    private String type;
+    private String defaultValue = null;
+
+    public PojoFieldType(String type) {
+        this.type = type;
     }
 }

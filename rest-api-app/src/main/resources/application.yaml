@@ -16,19 +16,27 @@ app:
       doc:
         summary: Example
         description: Long description
-        returnedStruct:
-          simple: int
-          simpleArray: list<string>
+#        returnedStruct:
+#          simple: int
+#          simpleArray: list<string>
       queryBuilderClass: 'fr.qgo.duckdbrestapi.service.defaultimpl.DefaultQueryBuilder'
       resultSetConvertorClass: 'fr.qgo.duckdbrestapi.service.defaultimpl.DefaultResultSetConvertor'
       jsonConvertorClass: 'fr.qgo.duckdbrestapi.service.defaultimpl.JSONObjectConvertor'
       payloadStruct:
-        field1: string
-        field2: Integer
-        field3: int
-        field4: list<Integer>
-        field5: set<Integer>
-        field6: map<String, Integer>
+        field1:
+          type: string
+          defaultValue: hello world
+        field2:
+          type: Integer
+        field3:
+          type: int
+        field4:
+          type: list<Integer>
+          defaultValue: '[]'
+        field5:
+          type: set<Integer>
+        field6:
+          type: map<String, Integer>
       query: |-
         SELECT 1                as simple, 
                ['a', 'b', 'c']  as simpleArray,

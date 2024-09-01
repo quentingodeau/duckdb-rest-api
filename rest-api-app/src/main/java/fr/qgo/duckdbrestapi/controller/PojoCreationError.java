@@ -11,7 +11,7 @@ public class PojoCreationError extends Exception {
         super(message, cause);
     }
 
-    public static  PojoCreationError failedToCreateField(String className, String fieldName, PojoFieldType type) {
+    public static  PojoCreationError failedToCreateField(String className, String fieldName, String type) {
         return new PojoCreationError(String.format("Failed to create the field '%s' of type '%s' in class '%s'", fieldName, type, className));
     }
 }

@@ -3,27 +3,27 @@ package fr.qgo.duckdbrestapi.service;
 import fr.qgo.duckdbrestapi.config.AppConfig;
 import fr.qgo.duckdbrestapi.config.QueryConfig;
 import fr.qgo.duckdbrestapi.exception.QueryNotFound;
-import lombok.SneakyThrows;
 import lombok.val;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
-import org.sql2o.Query;
 import org.sql2o.ResultSetIterable;
 import org.sql2o.Sql2o;
+import org.sql2o.StatementRunnable;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
-import java.sql.SQLException;
 import java.util.Map;
-import java.util.function.Function;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class RequestExecutionService {
     private final Sql2o duckDbDataSource;
     private final Map<String, QueryConfig> queries;
     private final ApplicationContext applicationContext;
+    private final Map<String, QueryContext> queryContextCacheMap = new ConcurrentHashMap<>();
 
     public RequestExecutionService(
             Sql2o duckDbDataSource,
@@ -35,98 +35,58 @@ public class RequestExecutionService {
         this.applicationContext = applicationContext;
     }
 
-    public ResponseEntity<StreamingResponseBody> runQuery(String queryId, Object params) throws QueryNotFound, SQLException {
+    public ResponseEntity<StreamingResponseBody> runQuery(String queryId, Object params) throws QueryNotFound {
         QueryConfig queryConfig = queries.get(queryId);
         if (queryConfig == null) {
             throw new QueryNotFound("No query found with id '" + queryId + "'");
         }
-        return ResponseEntity.ok(runQuery(queryConfig, params));
+        return ResponseEntity.ok(runQuery(queryId, queryConfig, params));
     }
 
-    private StreamingResponseBody runQuery(QueryConfig query, Object params) throws SQLException {
-        val queryBuilder = applicationContext.getBean(query.getQueryBuilderClass());
-        val resultSetConvertor = applicationContext.getBean(query.getResultSetConvertorClass());
-        val jsonConverter = applicationContext.getBean(query.getJsonConvertorClass());
+    private StreamingResponseBody runQuery(String queryId, QueryConfig queryConfig, Object params) {
+        val queryContext = queryContext(queryId, queryConfig);
 
-//        val connection = duckDbDataSource.getConnection();
-//        val statement = queryBuilder.prepareQuery(connection, query, params);
-//        val resultSet = statement.executeQuery();
-//        val duckDBResultSet = resultSet.unwrap(DuckDBResultSet.class);
-//        val stream = StreamSupport.stream(Spliterators.spliteratorUnknownSize(
-//                        new Iterator<DuckDBResultSet>() {
-//                            @Override
-//                            @SneakyThrows
-//                            public boolean hasNext() {
-//                                return duckDBResultSet.next();
-//                            }
-//
-//                            @Override
-//                            public DuckDBResultSet next() {
-//                                return duckDBResultSet;
-//                            }
-//                        }, Spliterator.IMMUTABLE
-//                ), false)
-//                .map(sneaky(resultSetConvertor::convert))
-//                .map(elt -> unsafeToJsonStr(elt, jsonConverter))
-//                .onClose(sneaky(resultSet::close))
-//                .onClose(sneaky(statement::close))
-//                .onClose(sneaky(connection::close));
+        return (outputStream) -> duckDbDataSource.withConnection(streamResult(queryContext, queryConfig, outputStream), params);
+    }
 
-        return (outputStream) -> {
-            duckDbDataSource.withConnection((connexion, args) -> {
-                Query prepareQuery = queryBuilder.prepareQuery(connexion, query, args);
-                ResultSetIterable<?> objects = prepareQuery.executeAndFetchLazy(resultSetConvertor::convert);
-                objects.forEach(elt -> {
-                    String outLine = unsafeToJsonStr(elt, jsonConverter);
-                    byte[] bytes = outLine.getBytes(StandardCharsets.UTF_8);
-                    try {
-                        outputStream.write(bytes);
-                        outputStream.write('\n');
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                });
-            }, params);
-//            try (stream) {
-//                Iterator<String> iterator = stream.iterator();
-//                while (iterator.hasNext()) {
-//                    String data = iterator.next();
-//                    byte[] bytes = data.getBytes(StandardCharsets.UTF_8);
-//                    outputStream.write(bytes);
-//                }
-//            }
+    private static StatementRunnable streamResult(QueryContext queryContext, QueryConfig queryConfig, OutputStream outputStream) {
+        return (connexion, args) -> {
+            val queryBuilder = queryContext.queryBuilder();
+            val resultSetConvertor = queryContext.resultSetConvertor();
+
+            val prepareQuery = queryBuilder.prepareQuery(connexion, queryConfig, args);
+            ResultSetIterable<?> objects = prepareQuery.executeAndFetchLazy(resultSetConvertor::convert);
+            objects.forEach(elt -> {
+                String outLine = unsafeToJsonStr(elt, queryContext.jsonConvertor());
+                byte[] bytes = outLine.getBytes(StandardCharsets.UTF_8);
+                try {
+                    outputStream.write(bytes);
+                    outputStream.write('\n');
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
         };
     }
 
-    private <T> String unsafeToJsonStr(Object data, JsonConvertor<T> converter) {
+    private QueryContext queryContext(String queryId, QueryConfig queryConfig) {
+        return queryContextCacheMap.computeIfAbsent(queryId, (k) -> computeQueryContext(queryConfig));
+    }
+
+    private QueryContext computeQueryContext(QueryConfig queryConfig) {
+        val queryBuilder = applicationContext.getBean(queryConfig.getQueryBuilderClass());
+        val resultSetConvertor = applicationContext.getBean(queryConfig.getResultSetConvertorClass());
+        val jsonConvertor = applicationContext.getBean(queryConfig.getJsonConvertorClass());
+        return new QueryContext(queryBuilder, resultSetConvertor, jsonConvertor);
+    }
+
+    private static <T> String unsafeToJsonStr(Object data, JsonConvertor<T> converter) {
         return converter.toJsonStr((T) data);
     }
 
-    private interface SneakyRunnableException {
-        void run() throws SQLException;
-    }
-
-
-    private interface SneakyFunctionException<T, R> {
-        R apply(T elt) throws SQLException;
-    }
-    private static <T, R> Function<T, R> sneaky(SneakyFunctionException<T, R> sneakyActionException) {
-        return new Function<T, R>() {
-            @Override
-            @SneakyThrows(SQLException.class)
-            public R apply(T elt) {
-                return sneakyActionException.apply(elt);
-            }
-        };
-    }
-
-    private static Runnable sneaky(SneakyRunnableException sneakyActionException) {
-        return new Runnable() {
-            @Override
-            @SneakyThrows(SQLException.class)
-            public void run()  {
-                sneakyActionException.run();
-            }
-        };
-    }
+    private record QueryContext(
+            QueryBuilder<?> queryBuilder,
+            ResultSetConvertor<?> resultSetConvertor,
+            JsonConvertor<?> jsonConvertor
+    ){}
 }
