@@ -7,7 +7,6 @@ import fr.qgo.duckdbrestapi.controller.PojoCreationError;
 import lombok.AllArgsConstructor;
 import lombok.val;
 import net.bytebuddy.ByteBuddy;
-import net.bytebuddy.description.field.FieldDescription;
 import net.bytebuddy.description.type.TypeDefinition;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.dynamic.DynamicType;
@@ -16,17 +15,11 @@ import net.bytebuddy.dynamic.scaffold.subclass.ConstructorStrategy;
 import net.bytebuddy.implementation.FieldAccessor;
 import net.bytebuddy.implementation.Implementation;
 import net.bytebuddy.implementation.MethodCall;
-import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.implementation.SuperMethodCall;
-import net.bytebuddy.implementation.bind.annotation.This;
 import net.bytebuddy.matcher.ElementMatchers;
-import org.json.JSONArray;
-import org.json.JSONTokener;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -83,11 +76,11 @@ public class PojoClassGeneratorService {
                 .intercept(defaultConstructor);
 
         DynamicType.Unloaded<Object> dynamicType = typeBuilder.make();
-        try {
-            dynamicType.saveIn(new File("."));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+//        try {
+//            dynamicType.saveIn(new File("."));
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
         return dynamicType
                 .load(getClass().getClassLoader(), ClassLoadingStrategy.Default.INJECTION)
                 .getLoaded();
@@ -111,7 +104,7 @@ public class PojoClassGeneratorService {
         val startGeneric = fieldType.indexOf('<');
         val endGeneric = fieldType.lastIndexOf('>');
         if (startGeneric < 0 || endGeneric < 0 || endGeneric < startGeneric) {
-            throw new PojoCreationError(String.format("Wrong type definition in class %s field %s type: %s", className, fieldName, fieldType))
+            throw new PojoCreationError(String.format("Wrong type definition in class %s field %s type: %s", className, fieldName, fieldType));
         }
 
         val container = fieldType.substring(0, startGeneric).toLowerCase(Locale.ENGLISH);

@@ -56,7 +56,6 @@ public class QueryControllerRegister {
     private final RequestExecutionService requestExecutionService;
     private final PojoClassGeneratorService pojoClassGeneratorService;
 
-    //@SneakyThrows(IOException.class)
     private Class<? extends BaseQueryController> createQueriesControllerClass() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, PojoCreationError {
         if (appConfig.getQueries().isEmpty()) {
             throw new IllegalArgumentException("No queries defined");
@@ -117,7 +116,11 @@ public class QueryControllerRegister {
         }
 
         DynamicType.Unloaded<BaseQueryController> dynamicType = typeBuilder.make();
-        //dynamicType.saveIn(new File(".")); // TODO
+//        try {
+//            dynamicType.saveIn(new File("."));
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
         return dynamicType
                 .load(getClass().getClassLoader())
                 .getLoaded();
