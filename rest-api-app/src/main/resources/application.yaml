@@ -1,0 +1,40 @@
+app:
+  duckDbConfig:
+  queries:
+    select1:
+      verb: post
+      queryBuilderClass: 'fr.qgo.duckdbrestapi.service.defaultimpl.DefaultQueryBuilder'
+      resultSetConvertorClass: 'fr.qgo.duckdbrestapi.service.defaultimpl.DefaultResultSetConvertor'
+      jsonConvertorClass: 'fr.qgo.duckdbrestapi.service.defaultimpl.JSONObjectConvertor'
+      query: |-
+        SELECT 1                as simple, 
+               ['a', 'b', 'c']  as simpleArray,
+               {a: 65}          as simpleStruct,
+               {a: 65, b: [58]} as simpleStruct,
+    select2:
+      verb: post
+      doc:
+        summary: Example
+        description: Long description
+        returnedStruct:
+          simple: int
+          simpleArray: list<string>
+      queryBuilderClass: 'fr.qgo.duckdbrestapi.service.defaultimpl.DefaultQueryBuilder'
+      resultSetConvertorClass: 'fr.qgo.duckdbrestapi.service.defaultimpl.DefaultResultSetConvertor'
+      jsonConvertorClass: 'fr.qgo.duckdbrestapi.service.defaultimpl.JSONObjectConvertor'
+      payloadStruct:
+        field1: string
+        field2: Integer
+        field3: int
+        field4: list<Integer>
+        field5: set<Integer>
+        field6: map<String, Integer>
+      query: |-
+        SELECT 1                as simple, 
+               ['a', 'b', 'c']  as simpleArray,
+               {a: 65}          as simpleStruct,
+               {a: 65, b: [58]} as complexStruct,
+
+logging:
+  level:
+    fr.qgo.duckdbrestapi.duckdb.C3P0InitConnection: DEBUG
