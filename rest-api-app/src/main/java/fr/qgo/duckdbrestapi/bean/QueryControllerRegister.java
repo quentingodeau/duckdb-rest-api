@@ -15,7 +15,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import net.bytebuddy.ByteBuddy;
@@ -36,8 +35,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
-import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -78,6 +75,10 @@ public class QueryControllerRegister {
             val query = queryEntry.getValue();
 
             DynamicType.Builder.MethodDefinition.ParameterDefinition<BaseQueryController> defineMethod = typeBuilder.defineMethod("query" + capitalizeQueryId, streamResponse, Modifier.PUBLIC);
+            MethodCall queryDelegate = MethodCall
+                    .invoke(runQuery)
+                    .onField("requestExecutionService")
+                    .with(queryId);
 
             var payloadClass = query.getPayloadClass();
             if (query.getPayloadStruct() != null) {
@@ -94,6 +95,9 @@ public class QueryControllerRegister {
                                 AnnotationDescription.Builder.ofType(RequestBody.class).build(),
                                 AnnotationDescription.Builder.ofType(Valid.class).build()
                         );
+                queryDelegate = queryDelegate.withAllArguments();
+            } else {
+                queryDelegate = queryDelegate.with((Object) null);
             }
 
             val methodAnnotations = new ArrayList<AnnotationDescription>();
@@ -106,11 +110,7 @@ public class QueryControllerRegister {
 
             typeBuilder = defineMethod
                     .throwing(Exception.class)
-                    .intercept(MethodCall
-                            .invoke(runQuery)
-                            .onField("requestExecutionService")
-                            .with(queryId)
-                            .withAllArguments())
+                    .intercept(queryDelegate)
                     .annotateMethod(methodAnnotations);
 
         }

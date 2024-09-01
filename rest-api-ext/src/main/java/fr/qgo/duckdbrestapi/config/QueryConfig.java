@@ -17,7 +17,7 @@ public class QueryConfig {
 
     private ExpositionVerb verb = ExpositionVerb.POST;
     private String query;
-    private Class<?> payloadClass = Map.class;
+    private Class<?> payloadClass = void.class;
     private Map<String, PojoFieldType> payloadStruct;
     private Class<? extends QueryBuilder<?>> queryBuilderClass;
     private Class<? extends ResultSetConvertor<?>> resultSetConvertorClass ;

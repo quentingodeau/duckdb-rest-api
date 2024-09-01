@@ -12,13 +12,13 @@ app:
                {a: 65}          as simpleStruct,
                {a: 65, b: [58]} as simpleStruct,
     select2:
-      verb: post
       doc:
         summary: Example
         description: Long description
-#        returnedStruct:
-#          simple: int
-#          simpleArray: list<string>
+      verb: post
+      returnedStruct:
+        simple: int
+        simpleArray: list<string>
       queryBuilderClass: 'fr.qgo.duckdbrestapi.service.defaultimpl.DefaultQueryBuilder'
       resultSetConvertorClass: 'fr.qgo.duckdbrestapi.service.defaultimpl.DefaultResultSetConvertor'
       jsonConvertorClass: 'fr.qgo.duckdbrestapi.service.defaultimpl.JSONObjectConvertor'

@@ -18,13 +18,15 @@ import java.util.Map;
 @AllArgsConstructor
 public final class DefaultQueryBuilder implements QueryBuilder<JSONObject> {
     @Override
-    public Query prepareQuery(Connection connection, QueryConfig query, Object params) throws SQLException {
-        Query comQuery = connection.createQuery(query.getQuery(), false);
-        if (params instanceof Map payload) {
-            ((Map<String, ?>) payload).forEach(comQuery::addParameter);
-            return comQuery;
+    public Query prepareQuery(Connection connection, QueryConfig queryConfig, Object params) {
+        Query query = connection.createQuery(queryConfig.getQuery(), false);
+        if (params == null) {
+            return query;
+        }else if (params instanceof Map payload) {
+            ((Map<String, ?>) payload).forEach(query::addParameter);
+            return query;
         } else {
-            return comQuery.bind(params);
+            return query.bind(params);
         }
     }
 }
