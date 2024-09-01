@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -90,7 +91,10 @@ public class QueryControllerRegister {
             if (hasPayload) {
                 defineMethod = defineMethod
                         .withParameter(payloadClass, "params")
-                        .annotateParameter(AnnotationDescription.Builder.ofType(RequestBody.class).build());
+                        .annotateParameter(
+                                AnnotationDescription.Builder.ofType(RequestBody.class).build(),
+                                AnnotationDescription.Builder.ofType(Valid.class).build()
+                        );
             }
 
             val methodAnnotations = new ArrayList<AnnotationDescription>();
