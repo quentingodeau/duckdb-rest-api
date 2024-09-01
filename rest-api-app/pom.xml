@@ -89,4 +89,22 @@
         </dependency>
     </dependencies>
 
+    <profiles>
+        <profile>
+            <id>with-jib</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.google.cloud.tools</groupId>
+                        <artifactId>jib-maven-plugin</artifactId>
+                        <configuration combine.children="append">
+                            <to>
+                                <image>${project.artifactId}:${project.version}</image>
+                            </to>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
