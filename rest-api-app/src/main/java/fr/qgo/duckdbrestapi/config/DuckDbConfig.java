@@ -10,6 +10,6 @@ import java.util.Properties;
 @Setter
 @ToString
 public class DuckDbConfig {
-    private String jdbcUrl;
-    private Properties properties;
+    private String jdbcUrl = "jdbc:duckdb:";
+    private Properties properties = new Properties();
 }

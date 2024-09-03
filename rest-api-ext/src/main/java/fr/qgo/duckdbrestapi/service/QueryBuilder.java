@@ -5,7 +5,8 @@ import org.sql2o.Connection;
 import org.sql2o.Query;
 
 import java.sql.SQLException;
+import java.util.Properties;
 
-public interface QueryBuilder<T> {
-    Query prepareQuery(Connection connection, QueryConfig query, Object params) throws SQLException;
+public interface QueryBuilder {
+    Query prepareQuery(Connection connection, String query, Object params, Properties userQueryParams) throws SQLException;
 }

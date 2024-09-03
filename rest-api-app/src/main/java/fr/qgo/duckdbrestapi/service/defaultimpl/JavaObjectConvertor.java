@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 
+import java.util.Properties;
+
 @Service
 @AllArgsConstructor
 public final class JavaObjectConvertor implements JsonConvertor<Object> {
@@ -13,7 +15,7 @@ public final class JavaObjectConvertor implements JsonConvertor<Object> {
 
     @Override
     @SneakyThrows
-    public String toJsonStr(Object data) {
+    public String toJsonStr(Object data, Properties userQueryParams) {
         return objectMapper.writeValueAsString(data);
     }
 }

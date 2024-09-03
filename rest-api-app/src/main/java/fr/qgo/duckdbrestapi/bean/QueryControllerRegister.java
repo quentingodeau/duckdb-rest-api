@@ -170,7 +170,7 @@ public class QueryControllerRegister {
                 .defineArray("produces", MediaType.APPLICATION_NDJSON_VALUE);
 
         if (query.getVerb() == ExpositionVerb.POST && hasPayload) {
-            methodAnnotation.defineArray("consumes", MediaType.APPLICATION_JSON_VALUE);
+            methodAnnotation = methodAnnotation.defineArray("consumes", MediaType.APPLICATION_JSON_VALUE);
         }
         return methodAnnotation.build();
     }

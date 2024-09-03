@@ -1,15 +1,16 @@
 app:
-  queries: {}
-#    select1:
-#      verb: post
-#      queryBuilderClass: 'fr.qgo.duckdbrestapi.service.defaultimpl.DefaultQueryBuilder'
-#      resultSetConvertorClass: 'fr.qgo.duckdbrestapi.service.defaultimpl.DefaultResultSetConvertor'
-#      jsonConvertorClass: 'fr.qgo.duckdbrestapi.service.defaultimpl.NoOpConvertor'
-#      query: |-
-#        SELECT 1                as simple,
-#               ['a', 'b', 'c']  as simpleArray,
-#               {a: 65}          as simpleStruct,
-#               {a: 65, b: [58]} as simpleStruct,
+  queries:
+    test1:
+      verb: post
+      queryBuilderClass: 'fr.qgo.duckdbrestapi.service.defaultimpl.DefaultQueryBuilder'
+      resultSetConvertorClass: 'fr.qgo.duckdbrestapi.service.defaultimpl.DefaultResultSetConvertor'
+      jsonConvertorClass: 'fr.qgo.duckdbrestapi.service.defaultimpl.NoOpConvertor'
+      payloadClass: 'java.util.Map'
+      query: |-
+        SELECT str
+        FROM MyTable
+        WHERE id = :id
+
 #    select2:
 #      doc:
 #        summary: Example
@@ -41,7 +42,7 @@ app:
 #               ['a', 'b', 'c']  as simpleArray,
 #               {a: 65}          as simpleStruct,
 #               {a: 65, b: [58]} as complexStruct,
-
-logging:
-  level:
-    fr.qgo.duckdbrestapi.duckdb.C3P0InitConnection: DEBUG
+#
+#logging:
+#  level:
+#    fr.qgo.duckdbrestapi.duckdb.C3P0InitConnection: DEBUG

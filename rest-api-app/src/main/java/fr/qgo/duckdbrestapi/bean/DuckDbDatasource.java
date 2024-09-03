@@ -2,6 +2,7 @@ package fr.qgo.duckdbrestapi.bean;
 
 import com.mchange.v2.c3p0.DataSources;
 import fr.qgo.duckdbrestapi.config.AppConfig;
+import fr.qgo.duckdbrestapi.config.DuckDbConfig;
 import fr.qgo.duckdbrestapi.duckdb.C3P0InitConnection;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -21,7 +22,8 @@ public class DuckDbDatasource {
 
     @Bean
     public DataSource duckDbDataSource() throws SQLException {
-        DataSource dataSource = DataSources.unpooledDataSource("jdbc:duckdb:", appConfig.getDuckDbConfig());
+        DuckDbConfig duckDbConfig = appConfig.getDuckDbConfig();
+        DataSource dataSource = DataSources.unpooledDataSource(duckDbConfig.getJdbcUrl(), duckDbConfig.getProperties());
         return DataSources.pooledDataSource(dataSource, getOverrideProps());
     }
 

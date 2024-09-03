@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
@@ -54,10 +55,10 @@ public class RequestExecutionService {
             val queryBuilder = queryContext.queryBuilder();
             val resultSetConvertor = queryContext.resultSetConvertor();
 
-            val prepareQuery = queryBuilder.prepareQuery(connexion, queryConfig, args);
-            ResultSetIterable<?> objects = prepareQuery.executeAndFetchLazy(resultSetConvertor::convert);
+            val prepareQuery = queryBuilder.prepareQuery(connexion, queryConfig.getQuery(), args, queryConfig.getUserParams());
+            ResultSetIterable<?> objects = resultSetConvertor.executeAndFetchLazy(prepareQuery, queryConfig.getUserParams());
             objects.forEach(elt -> {
-                String outLine = unsafeToJsonStr(elt, queryContext.jsonConvertor());
+                String outLine = unsafeToJsonStr(elt, queryContext.jsonConvertor(), queryConfig.getUserParams());
                 byte[] bytes = outLine.getBytes(StandardCharsets.UTF_8);
                 try {
                     outputStream.write(bytes);
@@ -80,12 +81,13 @@ public class RequestExecutionService {
         return new QueryContext(queryBuilder, resultSetConvertor, jsonConvertor);
     }
 
-    private static <T> String unsafeToJsonStr(Object data, JsonConvertor<T> converter) {
-        return converter.toJsonStr((T) data);
+    @SuppressWarnings("unchecked")
+    private static <T> String unsafeToJsonStr(Object data, JsonConvertor<T> converter, Properties userParams) {
+        return converter.toJsonStr((T) data, userParams);
     }
 
     private record QueryContext(
-            QueryBuilder<?> queryBuilder,
+            QueryBuilder queryBuilder,
             ResultSetConvertor<?> resultSetConvertor,
             JsonConvertor<?> jsonConvertor
     ){}

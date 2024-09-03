@@ -23,6 +23,7 @@
         <duckdb.version>1.0.0</duckdb.version>
         <lombok.version>1.18.34</lombok.version>
         <sql2o.version>1.8.0</sql2o.version>
+        <annotations.version>24.1.0</annotations.version>
         <assertj.version>3.25.3</assertj.version>
 
         <!-- BOM import -->
@@ -31,6 +32,7 @@
         <!-- Maven plugins-->
         <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
         <jib-maven-plugin.version>3.4.3</jib-maven-plugin.version>
+        <jacoco-maven-plugin.version>0.8.12</jacoco-maven-plugin.version>
     </properties>
 
 
@@ -40,6 +42,12 @@
                 <groupId>fr.qgo</groupId>
                 <artifactId>rest-api-ext</artifactId>
                 <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jetbrains</groupId>
+                <artifactId>annotations</artifactId>
+                <version>${annotations.version}</version>
             </dependency>
 
             <dependency>
@@ -110,6 +118,26 @@
                             <arg>-parameters</arg>
                         </compilerArgs>
                     </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>${jacoco-maven-plugin.version}</version>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>prepare-agent</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>report</id>
+                            <phase>prepare-package</phase>
+                            <goals>
+                                <goal>report</goal>
+                            </goals>
+                        </execution>
+                    </executions>
                 </plugin>
             </plugins>
         </pluginManagement>

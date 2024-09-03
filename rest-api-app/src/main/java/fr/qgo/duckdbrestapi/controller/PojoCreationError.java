@@ -1,7 +1,5 @@
 package fr.qgo.duckdbrestapi.controller;
 
-import fr.qgo.duckdbrestapi.config.PojoFieldType;
-
 public class PojoCreationError extends Exception {
     public PojoCreationError(String message) {
         super(message);
