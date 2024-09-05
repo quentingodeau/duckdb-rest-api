@@ -1,4 +1,4 @@
-package fr.qgo.duckdbrestapi.service.defaultimpl;
+package fr.qgo.duckdbrestapi.testtools;
 
 import org.sql2o.GenericDatasource;
 import org.sql2o.Sql2o;
@@ -10,14 +10,12 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Map;
 import java.util.Properties;
 
 public abstract class DuckDbTestSetup {
-    protected static final Properties EMPTY_PROPERTIES = new Properties();
-    protected static final Properties WITH_PRE_PARSE_PROPERTIES = new Properties();
-    static {
-        WITH_PRE_PARSE_PROPERTIES.setProperty("queryBuilder.preParse", "true");
-    }
+    protected static final Map<String, Object> EMPTY_PROPERTIES = Map.of();
+    protected static final Map<String, Object> WITH_PRE_PARSE_PROPERTIES = Map.of("queryBuilder.preParse", true);
 
     protected static File parquet;
     protected static File dbFile;
@@ -41,7 +39,8 @@ public abstract class DuckDbTestSetup {
             statement.execute("""
                     INSERT INTO MyTable(id, str, s, m, l) VALUES
                     (1, 'a', {i: 10, j: 'vak'}, MAP {10: 'key1', 20: 'key2', 30: 'key3'}, ['a', 'b']),
-                    (2, 'b', {i: 10, j: 'vak'}, MAP {10: 'key1', 20: 'key2', 30: 'key3'}, ['a', 'b'])
+                    (2, 'b', {i: 10, j: 'vak'}, MAP {10: 'key1', 20: 'key2', 30: 'key3'}, ['a', 'b']),
+                    (3, 'b', {i: 11, j: 'val'}, MAP {11: '1key', 21: '2key', 31: '3key'}, ['c', 'z']),
                     """);
 
             statement.execute("COPY MyTable TO '%s' (FORMAT PARQUET, PARTITION_BY 'str')".formatted(parquet));

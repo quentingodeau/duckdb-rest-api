@@ -8,7 +8,6 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.util.Map;
-import java.util.Properties;
 
 @Getter
 @Setter
@@ -24,5 +23,5 @@ public class QueryConfig {
     private Class<? extends ResultSetConvertor<?>> resultSetConvertorClass;
     private Class<? extends JsonConvertor<?>> jsonConvertorClass;
     private QueryDoc doc;
-    private Properties userParams;
+    private Map<String, Object> userQueryParams;
 }

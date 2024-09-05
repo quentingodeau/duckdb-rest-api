@@ -11,5 +11,6 @@ import java.util.Properties;
 @ToString
 public class DuckDbConfig {
     private String jdbcUrl = "jdbc:duckdb:";
+    private String initConnectionSql;
     private Properties properties = new Properties();
 }

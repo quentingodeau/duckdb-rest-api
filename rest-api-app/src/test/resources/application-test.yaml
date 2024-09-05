@@ -1,16 +1,40 @@
 app:
   queries:
     test1:
-      verb: post
-      queryBuilderClass: 'fr.qgo.duckdbrestapi.service.defaultimpl.DefaultQueryBuilder'
-      resultSetConvertorClass: 'fr.qgo.duckdbrestapi.service.defaultimpl.DefaultResultSetConvertor'
-      jsonConvertorClass: 'fr.qgo.duckdbrestapi.service.defaultimpl.NoOpConvertor'
+      verb: POST
+      queryBuilderClass: 'fr.qgo.duckdbrestapi.service.defaultimpl.query.DefaultQueryBuilder'
+      resultSetConvertorClass: 'fr.qgo.duckdbrestapi.service.defaultimpl.rs.DefaultResultSetConvertor'
+      jsonConvertorClass: 'fr.qgo.duckdbrestapi.service.defaultimpl.json.NoOpConvertor'
       payloadClass: 'java.util.Map'
       query: |-
         SELECT str
         FROM MyTable
         WHERE id = :id
 
+    test2:
+      verb: POST
+      queryBuilderClass: 'fr.qgo.duckdbrestapi.service.defaultimpl.query.DefaultQueryBuilder'
+      resultSetConvertorClass: 'fr.qgo.duckdbrestapi.service.defaultimpl.rs.DefaultResultSetConvertor'
+      jsonConvertorClass: 'fr.qgo.duckdbrestapi.service.defaultimpl.json.NoOpConvertor'
+      payloadStruct:
+        str: string
+        id: int
+      query: "SELECT * FROM read_parquet('${testParquetPath}/str=:str/*.parquet', hive_partitioning=true) WHERE id = :id"
+      userQueryParams:
+        '[queryBuilder.preParse]': true
+
+
+    test3:
+      verb: POST
+      queryBuilderClass: 'fr.qgo.duckdbrestapi.service.defaultimpl.query.DefaultQueryBuilder'
+      resultSetConvertorClass: 'fr.qgo.duckdbrestapi.testtools.service.MyResultSetConvertor'
+      jsonConvertorClass: 'fr.qgo.duckdbrestapi.service.defaultimpl.json.ObjectConvertor'
+      payloadStruct:
+        id: int
+      query: |-
+        SELECT *
+        FROM MyTable
+        WHERE id = :id
 #    select2:
 #      doc:
 #        summary: Example
@@ -19,9 +43,9 @@ app:
 #      returnedStruct:
 #        simple: int
 #        simpleArray: list<string>
-#      queryBuilderClass: 'fr.qgo.duckdbrestapi.service.defaultimpl.DefaultQueryBuilder'
-#      resultSetConvertorClass: 'fr.qgo.duckdbrestapi.service.defaultimpl.DefaultResultSetConvertor'
-#      jsonConvertorClass: 'fr.qgo.duckdbrestapi.service.defaultimpl.NoOpConvertor'
+#      queryBuilderClass: 'fr.qgo.duckdbrestapi.service.defaultimpl.query.DefaultQueryBuilder'
+#      resultSetConvertorClass: 'fr.qgo.duckdbrestapi.service.defaultimpl.rs.DefaultResultSetConvertor'
+#      jsonConvertorClass: 'fr.qgo.duckdbrestapi.service.defaultimpl.json.NoOpConvertor'
 #      payloadStruct:
 #        field1:
 #          type: string

@@ -1,4 +1,4 @@
-package fr.qgo.duckdbrestapi.service.defaultimpl;
+package fr.qgo.duckdbrestapi.service.defaultimpl.query;
 
 import fr.qgo.duckdbrestapi.service.QueryBuilder;
 import lombok.AllArgsConstructor;
@@ -20,6 +20,7 @@ import static org.apache.commons.lang3.ArrayUtils.contains;
 @Service
 @AllArgsConstructor
 public final class DefaultQueryBuilder implements QueryBuilder {
+    public static final String QUERY_BUILDER_PRE_PARSE_CONFIG_KEY = "queryBuilder.preParse";
     private static final String[] PRE_PARSE_FUNC = {
             "read_parquet",
             "parquet_scan",
@@ -28,7 +29,7 @@ public final class DefaultQueryBuilder implements QueryBuilder {
     };
 
     @Override
-    public Query prepareQuery(Connection connection, String queryStr, Object params, Properties userQueryParams) {
+    public Query prepareQuery(Connection connection, String queryStr, Object params, Map<String, Object> userQueryParams) {
         if (params != null && preParseOption(userQueryParams)) {
             List<PlaceholderPosition> placeholderPositions = preParse(queryStr);
             queryStr = doReplace(queryStr, placeholderPositions, params);
@@ -93,14 +94,16 @@ public final class DefaultQueryBuilder implements QueryBuilder {
         }
     }
 
-    private static boolean preParseOption(Properties userQueryParams) {
+    private static boolean preParseOption(Map<String, Object> userQueryParams) {
         if (userQueryParams == null) return false;
-        Object preParseOptionObj = userQueryParams.getOrDefault("queryBuilder.preParse", false);
-        if (preParseOptionObj instanceof String value) {
-            return "true".equalsIgnoreCase(value);
-        } else if (preParseOptionObj instanceof Boolean) {
-            return (boolean) preParseOptionObj;
+
+        Object preParseOptionObj = userQueryParams.getOrDefault(QUERY_BUILDER_PRE_PARSE_CONFIG_KEY, false);
+        if (preParseOptionObj instanceof Boolean b) {
+            return b;
+        } else if (preParseOptionObj instanceof String s) {
+            return "true".equalsIgnoreCase(s);
         }
+
         return false;
     }
 

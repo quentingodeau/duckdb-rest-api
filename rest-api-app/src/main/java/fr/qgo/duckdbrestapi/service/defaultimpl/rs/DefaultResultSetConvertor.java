@@ -1,4 +1,4 @@
-package fr.qgo.duckdbrestapi.service.defaultimpl;
+package fr.qgo.duckdbrestapi.service.defaultimpl.rs;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -20,7 +20,6 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Map;
-import java.util.Properties;
 
 @Service
 public class DefaultResultSetConvertor implements ResultSetConvertor<String> {
@@ -38,7 +37,7 @@ public class DefaultResultSetConvertor implements ResultSetConvertor<String> {
     }
 
     @Override
-    public ResultSetIterable<String> executeAndFetchLazy(Query query, Properties userQueryParams) throws SQLException {
+    public ResultSetIterable<String> executeAndFetchLazy(Query query, Map<String, Object> userQueryParams) {
         return query.executeAndFetchLazy((ResultSetHandler<String>) rs -> {
             try {
                 return resultSetWriter.writeValueAsString(rs);

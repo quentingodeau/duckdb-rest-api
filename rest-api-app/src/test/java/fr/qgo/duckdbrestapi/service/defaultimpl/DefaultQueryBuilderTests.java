@@ -1,5 +1,7 @@
 package fr.qgo.duckdbrestapi.service.defaultimpl;
 
+import fr.qgo.duckdbrestapi.service.defaultimpl.query.DefaultQueryBuilder;
+import fr.qgo.duckdbrestapi.testtools.DuckDbTestSetup;
 import lombok.val;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;

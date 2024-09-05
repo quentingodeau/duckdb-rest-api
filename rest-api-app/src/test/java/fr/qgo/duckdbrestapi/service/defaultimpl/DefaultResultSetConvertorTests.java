@@ -1,6 +1,9 @@
 package fr.qgo.duckdbrestapi.service.defaultimpl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import fr.qgo.duckdbrestapi.service.defaultimpl.query.DefaultQueryBuilder;
+import fr.qgo.duckdbrestapi.service.defaultimpl.rs.DefaultResultSetConvertor;
+import fr.qgo.duckdbrestapi.testtools.DuckDbTestSetup;
 import lombok.val;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;

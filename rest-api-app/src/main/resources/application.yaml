@@ -2,9 +2,9 @@ app:
   queries: {}
 #    select1:
 #      verb: post
-#      queryBuilderClass: 'fr.qgo.duckdbrestapi.service.defaultimpl.DefaultQueryBuilder'
-#      resultSetConvertorClass: 'fr.qgo.duckdbrestapi.service.defaultimpl.DefaultResultSetConvertor'
-#      jsonConvertorClass: 'fr.qgo.duckdbrestapi.service.defaultimpl.NoOpConvertor'
+#      queryBuilderClass: 'fr.qgo.duckdbrestapi.service.defaultimpl.query.DefaultQueryBuilder'
+#      resultSetConvertorClass: 'fr.qgo.duckdbrestapi.service.defaultimpl.rs.DefaultResultSetConvertor'
+#      jsonConvertorClass: 'fr.qgo.duckdbrestapi.service.defaultimpl.json.NoOpConvertor'
 #      query: |-
 #        SELECT 1                as simple,
 #               ['a', 'b', 'c']  as simpleArray,
@@ -18,9 +18,9 @@ app:
 #      returnedStruct:
 #        simple: int
 #        simpleArray: list<string>
-#      queryBuilderClass: 'fr.qgo.duckdbrestapi.service.defaultimpl.DefaultQueryBuilder'
-#      resultSetConvertorClass: 'fr.qgo.duckdbrestapi.service.defaultimpl.DefaultResultSetConvertor'
-#      jsonConvertorClass: 'fr.qgo.duckdbrestapi.service.defaultimpl.NoOpConvertor'
+#      queryBuilderClass: 'fr.qgo.duckdbrestapi.service.defaultimpl.query.DefaultQueryBuilder'
+#      resultSetConvertorClass: 'fr.qgo.duckdbrestapi.service.defaultimpl.rs.DefaultResultSetConvertor'
+#      jsonConvertorClass: 'fr.qgo.duckdbrestapi.service.defaultimpl.json.NoOpConvertor'
 #      payloadStruct:
 #        field1:
 #          type: string
